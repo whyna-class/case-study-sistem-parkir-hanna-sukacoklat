@@ -1,34 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ParkService } from './park.service';
-import { CreateParkDto } from './dto/create-park.dto';
 import { UpdateParkDto } from './dto/update-park.dto';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { CreateParkanDto } from './dto/create-park.dto';
+import { ParkirService } from './park.service';
+import { FindParkDto } from './dto/find-prak.dto';
 
-@Controller('park')
-export class ParkController {
-  constructor(private readonly parkService: ParkService) {}
+@Controller('parkir')
+export class ParkiranController {
+  constructor(private readonly parkiranService: ParkirService) {}
 
+  // Tambah data parkir
   @Post()
-  create(@Body() createParkDto: CreateParkDto) {
-    return this.parkService.create(createParkDto);
+  create(@Body() dto: CreateParkanDto) {
+    return this.parkiranService.create(dto);
   }
 
+  // Ambil semua (search / filter / pagination)
   @Get()
-  findAll() {
-    return this.parkService.findAll();
+  findAll(@Query() query: FindParkDto) {
+    return this.parkiranService.findAll(query);
   }
 
+  // Ambil detail by id
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.parkService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.parkiranService.findOne(id);
   }
 
+  // Update durasi -> recalc total
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParkDto: UpdateParkDto) {
-    return this.parkService.update(+id, updateParkDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateParkDto) {
+    return this.parkiranService.update(id, dto);
   }
 
+  // Delete data
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.parkService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.parkiranService.remove(id);
+  }
+
+  // Total pendapatan
+  @Get('total')
+  totalPendapatan() {
+    return this.parkiranService.totalPendapatan();
   }
 }
